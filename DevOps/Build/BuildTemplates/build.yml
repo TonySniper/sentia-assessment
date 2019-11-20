@@ -1,0 +1,50 @@
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+
+parameters:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: NuGetToolInstaller@1
+  displayName: 'Use NuGet 5.0.0'
+  inputs:
+    versionSpec: 5.0.0
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    restoreSolution: '${{parameters.solution}}'
+    # restoreDirectory: '..\packages'
+
+- task: VSBuild@1
+  displayName: 'Build solution'
+  inputs:
+    solution: '${{parameters.solution}}'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+    platform: '${{parameters.buildPlatform}}'
+    configuration: '${{parameters.buildConfiguration}}'
+
+# - task: MSBuild@1
+#   displayName: Build .csproj 
+#   inputs:
+#     solution: '${{parameters.solution}}'
+#     msbuildArchitecture: 'x64'
+#     msbuildArgs: /p:Configuration=$(configuration)
+
+- task: VSTest@2
+  displayName: 'Test assemblies'
+  inputs:
+    platform: '${{parameters.buildPlatform}}'
+    configuration: '${{parameters.buildConfiguration}}'
+    testAssemblyVer2: |
+     **\*.Tests.dll
+     !**\*TestAdapter.dll
+     !**\obj\**
+    runInParallel: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+    ArtifactName: 'WebAppSource'

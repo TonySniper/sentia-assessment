@@ -1,0 +1,12 @@
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+
+trigger:
+- development
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- template: BuildTemplates\build.yml
+  # parameters:
+  #   solution: '**/*WebApplication*.csproj'

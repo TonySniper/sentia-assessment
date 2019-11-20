@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "vnetName": {
@@ -15,14 +15,14 @@
         "description": "Address prefix"
       }
     },
-    "subnet1Prefix": {
+    "defaultSubnetAddressRange": {
       "type": "string",
       "defaultValue": "10.0.0.0/24",
       "metadata": {
         "description": "Subnet 1 Prefix"
       }
     },
-    "subnet1Name": {
+    "defaultSubnetName": {
       "type": "string",
       "metadata": {
         "description": "Subnet 1 Name"
@@ -55,12 +55,12 @@
           "apiVersion": "2018-10-01",
           "type": "subnets",
           "location": "[parameters('location')]",
-          "name": "[parameters('subnet1Name')]",
+          "name": "[parameters('defaultSubnetName')]",
           "dependsOn": [
             "[parameters('vnetName')]"
           ],
           "properties": {
-            "addressPrefix": "[parameters('subnet1Prefix')]"
+            "addressPrefix": "[parameters('defaultSubnetAddressRange')]"
           }
         }
       ]
